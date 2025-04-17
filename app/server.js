@@ -52,6 +52,7 @@ exports.run = function() {
   const io = websocket(server)
 
   io.on('connection', async (client) => {
+    console.log('💥 Client connected!', client.id);
     const { handshake = { query: {} } } = client
     const bufnr = handshake.query.bufnr
 
@@ -65,6 +66,7 @@ exports.run = function() {
     const buffers = await plugin.nvim.buffers
     buffers.forEach(async (buffer) => {
       if (buffer.id === Number(bufnr)) {
+        console.log('✅ Found matching buffer:', buffer.id);
         const winline = await plugin.nvim.call('winline')
         const currentWindow = await plugin.nvim.window
         const winheight = await plugin.nvim.call('winheight', currentWindow.id)
@@ -75,7 +77,9 @@ exports.run = function() {
         const name = await buffer.name
         const content = await buffer.getLines()
         const pageCtnMaxWidth = await plugin.nvim.getVar('mkdp_page_ctn_max_width')
+        console.log('📡 Sending pageCtnMaxWidth =', pageCtnMaxWidth); // <- add this!
         const currentBuffer = await plugin.nvim.buffer
+        console.log('🚀 Emitting refresh_content');
         client.emit('refresh_content', {
           options,
           isActive: currentBuffer.id === buffer.id,

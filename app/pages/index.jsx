@@ -89,7 +89,8 @@ export default class PreviewPage extends React.Component {
       theme: '',
       themeModeIsVisible: false,
       contentEditable: false,
-      disableFilename: 1
+      disableFilename: 1,
+      pageCtnMaxWidth: ''
     }
     this.showThemeButton = this.showThemeButton.bind(this)
     this.hideThemeButton = this.hideThemeButton.bind(this)
@@ -126,6 +127,10 @@ export default class PreviewPage extends React.Component {
         bufnr
       }
     })
+
+    socket.onAny((event, ...args) => {
+      console.log(`🛰 Received socket event: ${event}`, args);
+    });
 
     window.socket = socket
 
@@ -179,6 +184,7 @@ export default class PreviewPage extends React.Component {
     content,
     pageCtnMaxWidth = ''
   }) {
+    console.log('🚀 onRefreshContent: pageCtnMaxWidth =', pageCtnMaxWidth);
     if (!this.md) {
       const {
         mkit = {},
@@ -326,7 +332,10 @@ export default class PreviewPage extends React.Component {
       themeModeIsVisible,
       contentEditable,
       disableFilename,
+      pageCtnMaxWidth,
     } = this.state
+
+    console.log('Rendered pageCtnMaxWidth:', pageCtnMaxWidth);
 
     return (
       <React.Fragment>
@@ -355,7 +364,7 @@ export default class PreviewPage extends React.Component {
           <div
             id="page-ctn"
             contentEditable={contentEditable ? 'true' : 'false'}
-            style={{ maxWidth: this.state.pageCtnMaxWidth || '1400px', margin: '0 auto' }}
+            style={{ maxWidth: pageCtnMaxWidth || '1400px', margin: '0 auto' }}
           >
             {disableFilename == 0 &&
               <header
